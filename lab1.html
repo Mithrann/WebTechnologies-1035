@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="libraryApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Application</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        table {
+            width: 50%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        input {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body ng-controller="LibraryController">
+
+    <h2 style="text-align: center;">Library Book Management</h2>
+
+    <!-- Table displaying categories and book counts -->
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Book Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in library">
+                <td>{{ item.category }}</td>
+                <td>
+                    <input type="number" ng-model="item.count" min="0">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Form to add a new category -->
+    <div style="text-align: center; margin: 20px;">
+        <h3>Add a New Category</h3>
+        <input type="text" ng-model="newCategoryName" placeholder="Category Name">
+        <input type="number" ng-model="newBookCount" placeholder="Initial Book Count" min="0">
+        <button ng-click="addCategory()">Add Category</button>
+        <p style="color: red;" ng-if="errorMessage">{{ errorMessage }}</p>
+    </div>
+
+    <script>
+        angular.module('libraryApp', [])
+            .controller('LibraryController', ['$scope', function($scope) {
+                $scope.library = [
+                    { category: 'Fiction', count: 120 },
+                    { category: 'Non-Fiction', count: 80 },
+                    { category: 'Science', count: 150 },
+                    { category: 'Mathematics', count: 70 }
+                ];
+
+                $scope.newCategoryName = '';
+                $scope.newBookCount = 0;
+                $scope.errorMessage = '';
+
+                $scope.addCategory = function() {
+                    if (!$scope.newCategoryName || $scope.newBookCount < 0) {
+                        $scope.errorMessage = 'Please enter a valid category name and book count.';
+                        return;
+                    }
+
+                    const existingCategory = $scope.library.find(item => item.category.toLowerCase() === $scope.newCategoryName.toLowerCase());
+                    if (existingCategory) {
+                        $scope.errorMessage = 'Category name must be unique.';
+                        return;
+                    }
+
+                    $scope.library.push({
+                        category: $scope.newCategoryName,
+                        count: $scope.newBookCount
+                    });
+
+                    $scope.newCategoryName = '';
+                    $scope.newBookCount = 0;
+                    $scope.errorMessage = '';
+                };
+            }]);
+    </script>
+
+</body>
+</html>
